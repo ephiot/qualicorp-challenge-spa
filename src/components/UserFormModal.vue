@@ -26,15 +26,20 @@ export default defineComponent({
   },
 
   methods: {
-    doSubmit (data, edit) {
+    doSubmit ({ data, edit }) {
       this.$emit('submit', { data, edit })
     },
     open (row) {
       this.show = true
-      setTimeout(() => this.$refs.form.setData(row), 100)
+      if (!row) return
+      setTimeout(() => {
+        this.$refs.form.setData(row)
+        this.$refs.form.setEdit(true)
+      }, 100)
     },
     close () {
       this.show = false
+      this.$refs.form.setEdit(false)
     }
   }
 })

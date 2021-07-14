@@ -1,13 +1,13 @@
 <template>
   <q-page class="flex content-start q-pa-xl">
     <!-- Form dialog -->
-    <user-form-modal ref="formModal" />
+    <user-form-modal ref="formModal" @submit="formAction" />
 
     <!-- Delete dialog -->
     <user-delete-confirm ref="deleteDialog" @delete="doDelete" />
 
-    <!-- Search -->
-    <search-bar @search="search" />
+    <!-- Actions -->
+    <actions-bar @register="register" />
 
     <!-- Table -->
     <users-table :rows="users" @callEdit="callEdit" @callDelete="callDelete" />
@@ -17,7 +17,7 @@
 <script>
 import { defineComponent } from 'vue'
 import { mapActions, mapGetters } from 'vuex'
-import SearchBar from '../components/SearchBar'
+import ActionsBar from '../components/ActionsBar'
 import UsersTable from '../components/UsersTable'
 import UserDeleteConfirm from '../components/UserDeleteConfirm'
 import UserFormModal from '../components/UserFormModal'
@@ -26,7 +26,7 @@ export default defineComponent({
   name: 'PageIndex',
 
   components: {
-    SearchBar,
+    ActionsBar,
     UsersTable,
     UserDeleteConfirm,
     UserFormModal
@@ -44,7 +44,7 @@ export default defineComponent({
   },
 
   methods: {
-    ...mapActions('users', ['getUsers', 'deleteUser']),
+    ...mapActions('users', ['getUsers', 'storeUser', 'updateUser', 'deleteUser']),
 
     search (terms) {
       if (terms.length < 1) {
@@ -53,12 +53,25 @@ export default defineComponent({
       this.searchUsers(terms)
     },
 
+    register () {
+      this.$refs.formModal.open(null)
+    },
+
     callDelete (row) {
       this.$refs.deleteDialog.open(row)
     },
 
     callEdit (row) {
       this.$refs.formModal.open(row)
+    },
+
+    formAction ({ data, edit }) {
+      if (edit) {
+        this.updateUser(data)
+      } else {
+        this.storeUser(data)
+      }
+      this.$refs.formModal.close()
     },
 
     doDelete (row) {

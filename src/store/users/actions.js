@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-const URL = process.env.API_URL || 'https://immense-tundra-69382.herokuapp.com'
+const URL = 'https://immense-tundra-69382.herokuapp.com'
 
 export function getUsers ({ commit }) {
   axios.get(`${URL}/users`)
@@ -9,9 +9,23 @@ export function getUsers ({ commit }) {
     })
 }
 
-export function deleteUser ({ commit }, id) {
-  axios.delete(`${URL}/users/${id}`)
+export function storeUser ({ commit, dispatch }, data) {
+  axios.post(`${URL}/users`, data)
     .then(response => {
-      // commit('SET_USERS', response.data)
+      dispatch('getUsers')
+    })
+}
+
+export function updateUser ({ commit, dispatch }, data) {
+  axios.put(`${URL}/users/${data.id}`, data)
+    .then(response => {
+      dispatch('getUsers')
+    })
+}
+
+export function deleteUser ({ commit, dispatch }, id) {
+  axios.delete(`${URL}/users/${id}`)
+    .then((response, status) => {
+      dispatch('getUsers')
     })
 }
